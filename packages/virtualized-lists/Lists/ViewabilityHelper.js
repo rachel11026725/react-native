@@ -83,7 +83,7 @@ class ViewabilityHelper {
   _config: ViewabilityConfig;
   _hasInteracted: boolean = false;
   _timers: Set<number> = new Set();
-  _viewableIndices: Array<number> = [];
+  _viewableIndices: Set<number> = new Set();
   _viewableItems: Map<string, ViewToken> = new Map();
 
   constructor(
@@ -217,14 +217,17 @@ class ViewabilityHelper {
       );
     }
     if (
-      this._viewableIndices.length === viewableIndices.length &&
-      this._viewableIndices.every((v, ii) => v === viewableIndices[ii])
+      // Size check ensures the Set has no extra elements beyond those in the
+      // new array, and the every() check confirms all array elements are
+      // present in the Set — together they are a complete set-equality test.
+      this._viewableIndices.size === viewableIndices.length &&
+      viewableIndices.every(v => this._viewableIndices.has(v))
     ) {
       // We might get a lot of scroll events where visibility doesn't change and we don't want to do
       // extra work in those cases.
       return;
     }
-    this._viewableIndices = viewableIndices;
+    this._viewableIndices = new Set(viewableIndices);
     if (this._config.minimumViewTime) {
       const handle: TimeoutID = setTimeout(() => {
         /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb) This
@@ -256,7 +259,7 @@ class ViewabilityHelper {
    * clean-up cached _viewableIndices to evaluate changed items on next update
    */
   resetViewableIndices() {
-    this._viewableIndices = [];
+    this._viewableIndices = new Set();
   }
 
   /**
@@ -282,7 +285,7 @@ class ViewabilityHelper {
   ) {
     // Filter out indices that have gone out of view since this call was scheduled.
     viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>
-      this._viewableIndices.includes(ii),
+      this._viewableIndices.has(ii),
     );
     const prevItems = this._viewableItems;
     const nextItems = new Map(
