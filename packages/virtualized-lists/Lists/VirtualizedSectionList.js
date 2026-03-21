@@ -282,8 +282,9 @@ class VirtualizedSectionList<
       const sectionData = section.data;
       const key = section.key || String(i);
       itemIndex -= 1; // The section adds an item for the header
-      if (itemIndex >= getItemCount(sectionData) + 1) {
-        itemIndex -= getItemCount(sectionData) + 1; // The section adds an item for the footer.
+      const itemCount = getItemCount(sectionData);
+      if (itemIndex >= itemCount + 1) {
+        itemIndex -= itemCount + 1; // The section adds an item for the footer.
       } else if (itemIndex === -1) {
         return {
           section,
@@ -292,7 +293,7 @@ class VirtualizedSectionList<
           header: true,
           trailingSection: sections[i + 1],
         };
-      } else if (itemIndex === getItemCount(sectionData)) {
+      } else if (itemIndex === itemCount) {
         return {
           section,
           key: key + ':footer',
@@ -350,10 +351,23 @@ class VirtualizedSectionList<
     const onViewableItemsChanged = this.props.onViewableItemsChanged;
     if (onViewableItemsChanged != null) {
       onViewableItemsChanged({
-        viewableItems: viewableItems
-          .map(this._convertViewable, this)
-          .filter(Boolean),
-        changed: changed.map(this._convertViewable, this).filter(Boolean),
+        viewableItems: viewableItems.reduce(
+          (acc: Array<ViewToken>, viewable) => {
+            const converted = this._convertViewable(viewable);
+            if (converted != null) {
+              acc.push(converted);
+            }
+            return acc;
+          },
+          [],
+        ),
+        changed: changed.reduce((acc: Array<ViewToken>, viewable) => {
+          const converted = this._convertViewable(viewable);
+          if (converted != null) {
+            acc.push(converted);
+          }
+          return acc;
+        }, []),
       });
     }
   };
