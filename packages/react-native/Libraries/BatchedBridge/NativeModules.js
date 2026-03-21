@@ -50,13 +50,18 @@ function genModule(
     return {name: moduleName};
   }
 
+  const promiseMethodsSet: ?$ReadOnlySet<number> =
+    promiseMethods != null ? new Set(promiseMethods) : null;
+  const syncMethodsSet: ?$ReadOnlySet<number> =
+    syncMethods != null ? new Set(syncMethods) : null;
+
   const module: {[string]: unknown} = {};
   methods &&
     methods.forEach((methodName, methodID) => {
       const isPromise =
-        (promiseMethods && arrayContains(promiseMethods, methodID)) || false;
+        (promiseMethodsSet != null && promiseMethodsSet.has(methodID)) || false;
       const isSync =
-        (syncMethods && arrayContains(syncMethods, methodID)) || false;
+        (syncMethodsSet != null && syncMethodsSet.has(methodID)) || false;
       invariant(
         !isPromise || !isSync,
         'Cannot have a method that is both async and a sync hook',
@@ -163,10 +168,6 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
   // $FlowFixMe[prop-missing]
   fn.type = type;
   return fn;
-}
-
-function arrayContains<T>(array: ReadonlyArray<T>, value: T): boolean {
-  return array.indexOf(value) !== -1;
 }
 
 function updateErrorWithErrorData(

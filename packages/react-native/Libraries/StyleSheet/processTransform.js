@@ -13,6 +13,11 @@
 const stringifySafe = require('../Utilities/stringifySafe').default;
 const invariant = require('invariant');
 
+const MULTIVALUE_TRANSFORMS: $ReadOnlySet<string> = new Set([
+  'matrix',
+  'translate',
+]);
+
 /**
  * Generate a transform matrix based on the provided transforms, and use that
  * within the style object instead.
@@ -25,7 +30,7 @@ function processTransform(
   transform: Array<Object> | string,
 ): Array<Object> | Array<number> {
   if (typeof transform === 'string') {
-    const regex = new RegExp(/(\w+)\(([^)]+)\)/g);
+    const regex = /(\w+)\(([^)]+)\)/g;
     const transformArray: Array<Object> = [];
     let matches;
 
@@ -56,7 +61,7 @@ const _getKeyAndValueFromCSSTransform: (
   key,
   args,
 ) => {
-  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+|%)?/g);
+  const argsWithUnitsRegex = /([+-]?\d+(\.\d+)?)([a-zA-Z]+|%)?/g;
 
   switch (key) {
     case 'matrix':
@@ -170,8 +175,7 @@ function _validateTransform(
       'replace <View /> by <Animated.View />.',
   );
 
-  const multivalueTransforms = ['matrix', 'translate'];
-  if (multivalueTransforms.indexOf(key) !== -1) {
+  if (MULTIVALUE_TRANSFORMS.has(key)) {
     invariant(
       Array.isArray(value),
       'Transform with key of %s must have an array as the value: %s',
