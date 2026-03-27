@@ -41,12 +41,7 @@ function flattenStyle<
     const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
       // $FlowFixMe[invalid-in-rhs]
-      for (const key in computedStyle) {
-        // $FlowFixMe[incompatible-use]
-        // $FlowFixMe[invalid-computed-prop]
-        // $FlowFixMe[prop-missing]
-        result[key] = computedStyle[key];
-      }
+      Object.assign(result, computedStyle);
     }
   }
   // $FlowFixMe[incompatible-type]
