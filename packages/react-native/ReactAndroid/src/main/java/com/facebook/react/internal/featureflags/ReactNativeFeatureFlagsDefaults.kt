@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ab3b1d2277b8cc9db1708ef94515fb35>>
+ * @generated SignedSource<<a822c8a92925244e2a302bd04f034fa0>>
  */
 
 /**
@@ -49,7 +49,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean = false
 
-  override fun enableAndroidLinearText(): Boolean = false
+  override fun enableAndroidLinearText(): Boolean = true
 
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
@@ -182,6 +182,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
   override fun useFabricInterop(): Boolean = true
+
+  override fun useLISAlgorithmInDifferentiator(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
