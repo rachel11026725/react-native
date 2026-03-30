@@ -45,15 +45,22 @@ export function attachNativeEventImpl(
       value.__makeNative(platformConfig);
 
       eventMappings.push({
-        nativeEventPath: path,
+        // Copy path since it will be mutated during traversal
+        nativeEventPath: path.slice(),
         animatedValueTag: value.__getNativeTag(),
       });
     } else if (value instanceof AnimatedValueXY) {
-      traverse(value.x, path.concat('x'));
-      traverse(value.y, path.concat('y'));
+      path.push('x');
+      traverse(value.x, path);
+      path.pop();
+      path.push('y');
+      traverse(value.y, path);
+      path.pop();
     } else if (typeof value === 'object') {
       for (const key in value) {
-        traverse(value[key], path.concat(key));
+        path.push(key);
+        traverse(value[key], path);
+        path.pop();
       }
     }
   };
