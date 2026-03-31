@@ -10,17 +10,19 @@
 
 import NativeDeviceEventManager from '../../Libraries/NativeModules/specs/NativeDeviceEventManager';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import {HardwareBackPressEvent} from './HardwareBackPressEvent';
 
 const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
-type BackPressHandler = () => ?boolean;
+type BackPressHandler = (event: HardwareBackPressEvent) => ?boolean;
 
 const _backPressSubscriptions: Array<BackPressHandler> = [];
 
-RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function () {
+RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function (nativeEvent) {
+  const event = new HardwareBackPressEvent(nativeEvent?.timestamp);
   for (let i = _backPressSubscriptions.length - 1; i >= 0; i--) {
-    if (_backPressSubscriptions[i]?.()) {
+    if (_backPressSubscriptions[i]?.(event)) {
       return;
     }
   }
