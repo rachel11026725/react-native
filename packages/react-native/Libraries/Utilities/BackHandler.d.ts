@@ -12,6 +12,15 @@ import {NativeEventSubscription} from '../EventEmitter/RCTNativeAppEventEmitter'
 export type BackPressEventName = 'hardwareBackPress';
 
 /**
+ * Event dispatched when the hardware back button is pressed.
+ * The `timeStamp` property reflects the native timestamp captured
+ * when the back press was emitted.
+ */
+export class HardwareBackPressEvent extends Event {
+  readonly timeStamp: number;
+}
+
+/**
  * Detect hardware back button presses, and programmatically invoke the
  * default back button functionality to exit the app if there are no
  * listeners or if none of the listeners return true.
@@ -26,7 +35,7 @@ export interface BackHandlerStatic {
   exitApp(): void;
   addEventListener(
     eventName: BackPressEventName,
-    handler: () => boolean | null | undefined,
+    handler: (event: HardwareBackPressEvent) => boolean | null | undefined,
   ): NativeEventSubscription;
 }
 
