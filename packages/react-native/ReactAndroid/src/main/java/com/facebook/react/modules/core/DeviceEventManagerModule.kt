@@ -8,6 +8,7 @@
 package com.facebook.react.modules.core
 
 import android.net.Uri
+import android.os.SystemClock
 import com.facebook.fbreact.specs.NativeDeviceEventManagerSpec
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.JavaScriptModule
@@ -36,7 +37,8 @@ public open class DeviceEventManagerModule(
   public open fun emitHardwareBackPressed() {
     val reactApplicationContext: ReactApplicationContext? =
         getReactApplicationContextIfActiveOrWarn()
-    reactApplicationContext?.emitDeviceEvent("hardwareBackPress", null)
+    val map = buildReadableMap { put("timestamp", SystemClock.uptimeMillis().toDouble()) }
+    reactApplicationContext?.emitDeviceEvent("hardwareBackPress", map)
   }
 
   /** Sends an event to the JS instance that a new intent was received. */

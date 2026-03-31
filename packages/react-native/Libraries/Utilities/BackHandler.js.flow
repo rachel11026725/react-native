@@ -10,13 +10,17 @@
 
 'use strict';
 
+import type {HardwareBackPressEvent} from './HardwareBackPressEvent';
+
 export type BackPressEventName = 'backPress' | 'hardwareBackPress';
+
+export type {HardwareBackPressEvent} from './HardwareBackPressEvent';
 
 type TBackHandler = {
   exitApp(): void,
   addEventListener(
     eventName: BackPressEventName,
-    handler: () => ?boolean,
+    handler: (event: HardwareBackPressEvent) => ?boolean,
   ): {remove: () => void, ...},
 };
 
